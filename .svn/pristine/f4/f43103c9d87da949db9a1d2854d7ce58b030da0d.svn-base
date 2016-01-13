@@ -1,0 +1,42 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package BLL;
+
+import DAL.DALHoSoKhamBenh;
+import DTO.DTOHoSoKhamBenh;
+import java.util.ArrayList;
+
+/**
+ *
+ * @author Documents
+ */
+public class BLLHoSoKhamBenh {
+    DALHoSoKhamBenh dalHS = new DALHoSoKhamBenh();
+
+    public BLLHoSoKhamBenh() {
+    }
+    
+    public ArrayList<DTOHoSoKhamBenh> LayDSHoSo(){
+        return dalHS.LayDSHoSo();
+    }
+    
+    public DTOHoSoKhamBenh LayHSTheoMa(String maHS){
+        return dalHS.LayHoSoTheoMa(maHS);
+    }
+    
+    public ArrayList<DTOHoSoKhamBenh> TimHoSo(int tim){
+        return dalHS.TimHoSo(tim);
+    }
+    
+    public boolean XoaHoSo(int maHS){
+        return dalHS.XoaHoSo(maHS);
+    }
+
+    public DTOHoSoKhamBenh LayHSTheoMa(int maHS) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+}

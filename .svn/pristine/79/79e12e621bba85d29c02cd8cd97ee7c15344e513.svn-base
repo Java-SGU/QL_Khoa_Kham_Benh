@@ -1,0 +1,164 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package DAL;
+
+import DTO.DTOPhongKham;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+/**
+ *
+ * @author Pham
+ */
+public class DALPhongKham {
+    DALConnectionBD dalConn = new DALConnectionBD();
+    public DALPhongKham(){
+        
+    }
+    
+    //lay tat ca phong kham
+    public ArrayList<DTOPhongKham> layDSPhongKham(){
+        ArrayList<DTOPhongKham> dsPhong = new ArrayList<>();
+        try {
+            dalConn.getConnectionBD();
+            String sql = "SELECT * FROM phongkham";
+            PreparedStatement pstmt = dalConn.getCnt().prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                dsPhong.add(new DTOPhongKham(rs));
+            }
+            
+        } catch (Exception e) {
+            System.err.print("lay danh sach phong bi loi");
+        }
+        finally{
+            dalConn.closeCnt();
+        }
+        return dsPhong;
+    }
+    
+    //lay phong kham theo ma
+    public DTOPhongKham layPhongKhamTheoMa(int mapk){
+        try {
+            dalConn.getConnectionBD();
+            DTOPhongKham dtoNV = null;
+            String sql = "SELECT * FROM phongkham WHERE mapk = ?";
+            PreparedStatement pstmt = dalConn.getCnt().prepareStatement(sql);//
+            pstmt.setInt(1, mapk);//
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                dtoNV = new DTOPhongKham(rs);
+            }
+            
+            return dtoNV;
+        } catch (Exception e) {
+            System.err.print("lay theo ma phong kham bi loi");
+            return null;
+        }
+        finally{
+            dalConn.closeCnt();
+        }
+    }
+    
+    public DTOPhongKham LayPhongKhamTheoTen(String tenpk){
+        try {
+            dalConn.getConnectionBD();
+            DTOPhongKham dtoPK = null;
+            String sql = "SELECT * FROM phongkham WHERE tenpk = ?";
+            PreparedStatement pre = dalConn.getCnt().prepareStatement(sql);
+            pre.setString(1, tenpk);
+            ResultSet rs = pre.executeQuery();
+            while(rs.next()){
+                dtoPK = new DTOPhongKham(rs);
+            }
+            
+            return dtoPK;
+        } catch (Exception e) {
+            System.err.print("Lấy theo tên phòng khám bị lỗi");
+            return null;
+        }
+        finally{
+            dalConn.closeCnt();
+        }
+    }
+    
+    public boolean ThemPhongKham(DTOPhongKham dtoPK){
+        try {
+            dalConn.getConnectionBD();
+            String sql = "INSERT INTO phongkham(tenpk) VALUES(?)";
+            PreparedStatement stmt = dalConn.getCnt().prepareStatement(sql);
+            stmt.setString(1, dtoPK.getTenpk());
+            stmt.executeUpdate();
+            return true;
+        } catch (Exception e) {
+        }
+        finally{
+            dalConn.closeCnt();
+        }
+        return false;
+    }
+    
+    public boolean SuaPhongKham(DTOPhongKham dtoPK){
+        try {
+            dalConn.getConnectionBD();
+            String sql = "UPDATE phongkham SET tenpk = ? WHERE mapk = ? ";
+            PreparedStatement stmt = dalConn.getCnt().prepareStatement(sql);
+            stmt.setString(1, dtoPK.getTenpk());
+            stmt.setInt(2, dtoPK.getMapk());
+            stmt.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            System.err.print(e.getMessage());
+        }
+        finally{
+            dalConn.closeCnt();
+        }
+        return false;
+    }
+    
+    //tim phong kham theo ten
+    public ArrayList<DTOPhongKham> TimPhongKham(String tentim){
+        ArrayList<DTOPhongKham> dsPK = new ArrayList<>();
+        try {
+            dalConn.getConnectionBD();
+            String sql = "SELECT * FROM phongkham WHERE tenpk LIKE ?";
+            PreparedStatement pre = dalConn.getCnt().prepareStatement(sql);
+            pre.setString(1, "%" + tentim + "%");
+            ResultSet rs = pre.executeQuery();
+            while(rs.next()){
+                dsPK.add(new DTOPhongKham(rs));
+            }
+        } 
+        catch (Exception e) {
+            System.err.print(e.getMessage());
+        }
+        finally{
+            dalConn.closeCnt();
+        }
+        return dsPK;
+    }
+    
+    //xoa phong kham
+    public boolean XoaPhongKham(int maPK){
+        try {
+            dalConn.getConnectionBD();
+            String sql = "DELETE FROM phongkham WHERE mapk = ?";
+            PreparedStatement pstmt = dalConn.getCnt().prepareStatement(sql);
+            pstmt.setInt(1, maPK);
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.print(e.getMessage());
+        }
+        finally{
+            dalConn.closeCnt();
+        }
+        return false;
+    }
+}

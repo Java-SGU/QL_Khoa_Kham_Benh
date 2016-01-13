@@ -1,0 +1,170 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package DAL;
+
+import DTO.DTOBenhNhan;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+/**
+ *
+ * @author Pham
+ */
+public class DALBenhNhan {
+    DALConnectionBD dalConn = new DALConnectionBD();
+    public DALBenhNhan(){
+        
+    }
+    
+    //them benh nhan moi vao csdl
+    public boolean themBenhNhan(DTOBenhNhan dtoBenhNhan){
+        try {
+            dalConn.getConnectionBD();
+            String sql = "INSERT INTO benhnhan(mabn, hoten, ngaysinh, gioitinh, cmnd, diachi, dienthoai, bhyt, ngayhethan, vuottuyen, mabh, tiensusk, mapk) "
+                    + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement pstmt = dalConn.getCnt().prepareStatement(sql);
+            pstmt.setString(1, dtoBenhNhan.getMaBN());
+            pstmt.setString(2, dtoBenhNhan.getHoten());
+            pstmt.setString(3, dtoBenhNhan.getNgaysinh());
+            pstmt.setString(4, dtoBenhNhan.getGioitinh());
+            pstmt.setString(5, dtoBenhNhan.getCMND());
+            pstmt.setString(6, dtoBenhNhan.getDiachi());
+            pstmt.setString(7, dtoBenhNhan.getDienthoai());
+            pstmt.setInt(8, dtoBenhNhan.getBHYT());
+            pstmt.setDate(9, dtoBenhNhan.getNgayhethan());
+            pstmt.setInt(10, dtoBenhNhan.getVuottuyen());
+            pstmt.setString(11, dtoBenhNhan.getMaBH());
+            pstmt.setString(12, dtoBenhNhan.getTiensusk());
+            pstmt.setInt(13, dtoBenhNhan.getDtoPhongKham().getMapk());
+            pstmt.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            System.err.print(e.getMessage());
+            System.err.printf("Loi nhap benh nhan");
+        }
+        finally{
+            dalConn.closeCnt();
+        }
+        return false;
+    }
+    
+    //lay tat ca benh nhan
+    public ArrayList<DTOBenhNhan> layDSBenhNhan(){
+        ArrayList<DTOBenhNhan> dsBenhNhan = new ArrayList<>();
+        try {
+            dalConn.getConnectionBD();
+            String sql = "SELECT * FROM benhnhan";
+            PreparedStatement pstmt = dalConn.getCnt().prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                dsBenhNhan.add(new DTOBenhNhan(rs));
+                
+            }
+            
+        } catch (Exception e) {
+            System.err.print(e.getMessage());
+            System.err.print("Loi lay danh sach benh nhan class DALBenhNhan");
+        }
+        finally{
+            dalConn.closeCnt();
+        }
+        return dsBenhNhan;
+    }
+    
+    //lay benh nhan theo ma
+    public DTOBenhNhan layBenhNhanTheoMa(String maBN){
+        DTOBenhNhan dtoBenhnhan = null;
+        try {
+            dalConn.getConnectionBD();
+            String sql = "SELECT * FROM benhnhan WHERE mabn = ?";
+            PreparedStatement pstmt = dalConn.getCnt().prepareStatement(sql);
+            pstmt.setString(1, maBN);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                dtoBenhnhan = new DTOBenhNhan(rs);
+            }
+            
+        } catch (SQLException e) {
+        }
+        finally{
+            dalConn.closeCnt();
+        }
+        return dtoBenhnhan;
+    }
+    
+    //tìm bệnh nhân theo tên
+    public ArrayList<DTOBenhNhan> timBenhNhan(String tim){
+        ArrayList<DTOBenhNhan> dsBenhnhan = new ArrayList<>();
+        try {
+            dalConn.getConnectionBD();
+            String sql = "SELECT * FROM benhnhan WHERE mabn like ? OR hoten like ?";
+            PreparedStatement pstmt = dalConn.getCnt().prepareStatement(sql);
+            pstmt.setString(1, "%" + tim + "%");
+            pstmt.setString(2, "%" + tim + "%");
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                dsBenhnhan.add(new DTOBenhNhan(rs));
+            }
+            
+        } catch (SQLException e) {
+            System.err.print(e.getMessage());
+        }
+        finally{
+            dalConn.closeCnt();
+        }
+        return dsBenhnhan;
+    }
+    
+    //cập nhật thông bệnh nhân
+    public boolean capnhatBenhNhan(DTOBenhNhan dtoBenhNhan){
+        try {
+            dalConn.getConnectionBD();
+            String sql="UPDATE benhnhan SET hoten=?, ngaysinh=?, gioitinh=?, cmnd=?, diachi=?, dienthoai=?, bhyt=?, ngayhethan=?, vuottuyen=?, mabh=? "
+                    + "WHERE mabn=?";
+            PreparedStatement pstmt = dalConn.getCnt().prepareStatement(sql);
+            pstmt.setString(1, dtoBenhNhan.getHoten());
+            pstmt.setString(2, dtoBenhNhan.getNgaysinh());
+            pstmt.setString(3, dtoBenhNhan.getGioitinh());
+            pstmt.setString(4, dtoBenhNhan.getCMND());
+            pstmt.setString(5, dtoBenhNhan.getDiachi());
+            pstmt.setString(6, dtoBenhNhan.getDienthoai());
+            pstmt.setInt(7, dtoBenhNhan.getBHYT());
+            pstmt.setDate(8, dtoBenhNhan.getNgayhethan());
+            pstmt.setInt(9, dtoBenhNhan.getVuottuyen());
+            pstmt.setString(10, dtoBenhNhan.getMaBH());
+            pstmt.setString(11, dtoBenhNhan.getMaBN());
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.print(e.getMessage());
+        }
+        finally{
+            dalConn.closeCnt();
+        }
+        return false;
+    }
+    
+    //xoa benh nhan
+    public boolean xoaBenhNhan(String maBN){
+        try {
+            dalConn.getConnectionBD();
+            String sql = "DELETE FROM benhnhan WHERE mabn = ?";
+            PreparedStatement pstmt = dalConn.getCnt().prepareStatement(sql);
+            pstmt.setString(1, maBN);
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.print(e.getMessage());
+        }
+        finally{
+            dalConn.closeCnt();
+        }
+        return false;
+    }
+}

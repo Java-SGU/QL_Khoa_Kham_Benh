@@ -1,0 +1,211 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package DAL;
+
+import DTO.DTONhanVien;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+
+/**
+ *
+ * @author Documents
+ */
+public class DALNhanVien {
+    DALConnectionBD cnt = new DALConnectionBD();
+    
+    public DALNhanVien() {
+    }
+    
+   //ham lay NV theo ma
+    public DTONhanVien LayNVTheoMa(int manv){
+        try {
+            cnt.getConnectionBD();
+            DTONhanVien dtoNV = null;
+            String sql = "SELECT * FROM nhanvien WHERE manv = ?";
+            PreparedStatement pstmt = cnt.getCnt().prepareStatement(sql);//
+            pstmt.setInt(1, manv);//
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                dtoNV = new DTONhanVien(rs);
+            }
+            
+            return dtoNV;
+        } catch (Exception e) {
+            System.err.print("Lấy theo mã bị lỗi");
+            return null;
+        }
+        finally{
+            cnt.closeCnt();
+        }
+    }
+    
+    //lay toan bo nhan vien chua co thong tin dang nhap
+    public ArrayList<DTONhanVien> LayDSNhanVien(){
+        try {
+            cnt.getConnectionBD();
+            ArrayList<DTONhanVien> dsNV = new ArrayList<>();
+            String sql = "SELECT * FROM nhanvien WHERE manv not in (SELECT manv FROM nguoidung)";
+            PreparedStatement pstmt = cnt.getCnt().prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                dsNV.add(new DTONhanVien(rs));
+            }
+            
+            return dsNV;
+        } catch (Exception e) {
+            System.err.print("Lấy danh sách nhân viên bị lỗi");
+            return null;
+        }
+        finally{
+            cnt.closeCnt();
+        }
+    }
+    
+    //lay toan bo nhan vien
+    public ArrayList<DTONhanVien> LayToanBoNhanVien(){
+        try {
+            cnt.getConnectionBD();
+            ArrayList<DTONhanVien> dsNV = new ArrayList<>();
+            String sql = "SELECT * FROM nhanvien";
+            PreparedStatement pstmt = cnt.getCnt().prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                dsNV.add(new DTONhanVien(rs));
+            }
+            cnt.closeCnt();
+            return dsNV;
+        } catch (Exception e) {
+            System.err.print("Lấy danh sách nhân viên bị lỗi");
+            return null;
+        }
+    }
+    
+    public boolean ThemNhanVien(DTONhanVien dtoNV){
+        try {
+            cnt.getConnectionBD();
+            String sql = "INSERT INTO nhanvien(hoten, gioitinh, ngaysinh, cmnd, diachi, "
+                    + "dienthoai, hocvi, mack, macv) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement stmt = cnt.getCnt().prepareStatement(sql);
+            stmt.setString(1, dtoNV.getHoTen());
+            stmt.setString(2, dtoNV.getGioiTinh());
+            stmt.setDate(3, dtoNV.getNgaySinh());
+            stmt.setString(4, dtoNV.getCmnd());
+            stmt.setString(5, dtoNV.getDiaChi());
+            stmt.setString(6, dtoNV.getDienThoai());
+            stmt.setString(7, dtoNV.getHocVi());
+            stmt.setInt(8, dtoNV.getDtoCK().getMaChuyenKhoa());
+            stmt.setInt(9, dtoNV.getDtoCV().getMaChucVu());
+            stmt.executeUpdate();
+            
+            return true;
+        } 
+        catch (Exception e) {
+            System.err.print(e.getMessage());
+        }
+        finally{
+            cnt.closeCnt();
+        }
+        return false;
+    }
+    
+    //cap nhat thong tin nhan vien
+    public boolean capNhatNhanVien(DTONhanVien dtoNV){
+        try {
+            cnt.getConnectionBD();
+            String sql = "UPDATE nhanvien SET hoten=?, gioitinh=?, ngaysinh=?, cmnd=?, diachi=?, "
+                    + "dienthoai=?, hocvi=?, mack=?, macv=? WHERE manv = ? ";
+            PreparedStatement stmt = cnt.getCnt().prepareStatement(sql);
+            stmt.setString(1, dtoNV.getHoTen());
+            stmt.setString(2, dtoNV.getGioiTinh());
+            stmt.setDate(3, dtoNV.getNgaySinh());
+            stmt.setString(4, dtoNV.getCmnd());
+            stmt.setString(5, dtoNV.getDiaChi());
+            stmt.setString(6, dtoNV.getDienThoai());
+            stmt.setString(7, dtoNV.getHocVi());
+            stmt.setInt(8, dtoNV.getDtoCK().getMaChuyenKhoa());
+            stmt.setInt(9, dtoNV.getDtoCV().getMaChucVu());
+            stmt.setInt(10, dtoNV.getMaNV());
+            stmt.executeUpdate();
+            return true;
+        } 
+        catch (Exception e) {
+            System.err.print(e.getMessage());
+        }
+        finally{
+            cnt.closeCnt();
+        }
+        return false;
+    }
+    
+    //tim kiem thong tin nhan vien
+    public ArrayList<DTONhanVien> timNhanVien(String tim){
+        try {
+            cnt.getConnectionBD();
+            ArrayList<DTONhanVien> dsNV = new ArrayList<>();
+            String sql = "SELECT * FROM nhanvien WHERE hoten like ?";
+            PreparedStatement pstmt = cnt.getCnt().prepareStatement(sql);
+            pstmt.setString(1, "%" + tim + "%");
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                dsNV.add(new DTONhanVien(rs));
+            }
+            return dsNV;
+        } catch (Exception e) {
+            System.err.print("Lấy danh sách nhân viên bị lỗi");
+            return null;
+        }
+        finally{
+            cnt.closeCnt();
+        }
+    }
+    
+    //xoa thong tin nhan vien
+    public boolean xoaNhanVien(int maNV){
+        cnt.getConnectionBD();
+        try{
+            String sql = "DELETE FROM nhanvien WHERE manv = ?";
+            PreparedStatement pstmt = cnt.getCnt().prepareStatement(sql);
+            pstmt.setInt(1, maNV);
+            pstmt.executeUpdate();
+            
+            return true;
+        }
+        catch(Exception e){
+            System.err.print(e.getMessage());
+        }
+        finally{
+            cnt.closeCnt();
+        }
+        return false;
+    }
+    
+    //tìm trưởng khoa
+    public DTONhanVien timTruongKhoa(String dk){
+        try {
+            cnt.getConnectionBD();
+            DTONhanVien dtoNV = null;
+            String sql = "SELECT * FROM nhanvien nv, chucvu cv WHERE nv.macv = cv.macv AND tencv like ?";
+            PreparedStatement pstmt = cnt.getCnt().prepareStatement(sql);//
+            pstmt.setString(1, "%" + dk + "%");
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                dtoNV = new DTONhanVien(rs);
+            }
+            
+            return dtoNV;
+        } catch (Exception e) {
+            System.err.print(e.getMessage());
+            return null;
+        }
+        finally{
+            cnt.closeCnt();
+        }
+    }
+    
+    
+}

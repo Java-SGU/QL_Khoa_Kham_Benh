@@ -1,0 +1,126 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package DAL;
+
+import DTO.DTOHoSoKhamBenh;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+/**
+ *
+ * @author Documents
+ */
+public class DALHoSoKhamBenh {
+    DALConnectionBD cnt = new DALConnectionBD();
+
+    public DALHoSoKhamBenh() {
+    }
+    
+    //lay tat ca benh nhan
+    public ArrayList<DTOHoSoKhamBenh> LayDSHoSo(){
+        ArrayList<DTOHoSoKhamBenh> dsHS = new ArrayList<>();
+        try {
+            cnt.getConnectionBD();
+            String sql = "SELECT * FROM benhan";
+            PreparedStatement pstmt = cnt.getCnt().prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                dsHS.add(new DTOHoSoKhamBenh(rs));
+            }
+        } catch (Exception e) {
+            System.err.print(e.getMessage());
+            System.err.print("Lấy danh sách hồ sơ bị lỗi");
+        }
+        finally{
+            cnt.closeCnt();
+        }
+        return dsHS;
+    }
+    
+    //lay ho so theo ma HS
+    public ArrayList<DTOHoSoKhamBenh> LayHoSoTheoMaBN(String maHS){
+        ArrayList<DTOHoSoKhamBenh> dsHS = new ArrayList<>();
+        try {
+            cnt.getConnectionBD();
+            String sql = "SELECT * FROM benhan WHERE mabn = ?";
+            PreparedStatement pstmt = cnt.getCnt().prepareStatement(sql);
+            pstmt.setString(1, maHS);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                dsHS.add(new DTOHoSoKhamBenh(rs));
+            }
+            
+        } catch (SQLException e) {
+        }
+        finally{
+            cnt.closeCnt();
+        }
+        return dsHS;
+    }
+    
+     //lay ho so theo ma BN
+    public DTOHoSoKhamBenh LayHoSoTheoMa(int maHS){
+        DTOHoSoKhamBenh HS = null;
+        try {
+            cnt.getConnectionBD();
+            String sql = "SELECT * FROM benhan WHERE maba = ?";
+            PreparedStatement pstmt = cnt.getCnt().prepareStatement(sql);
+            pstmt.setInt(1, maHS);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                HS = new DTOHoSoKhamBenh(rs);
+            }
+            
+        } catch (SQLException e) {
+        }
+        finally{
+            cnt.closeCnt();
+        }
+        return HS;
+    }
+    
+    //tìm hồ sơ theo mã
+    public ArrayList<DTOHoSoKhamBenh> TimHoSo(int tim){
+        ArrayList<DTOHoSoKhamBenh> dsHS = new ArrayList<>();
+        try {
+            cnt.getConnectionBD();
+            String sql = "SELECT * FROM benhan WHERE maba = ?";
+            PreparedStatement pstmt = cnt.getCnt().prepareStatement(sql);
+            pstmt.setInt(1, tim);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                dsHS.add(new DTOHoSoKhamBenh(rs));
+            }
+        } catch (SQLException e) {
+            System.err.print(e.getMessage());
+        }
+        finally{
+            cnt.closeCnt();
+        }
+        return dsHS;
+    }
+    
+    //xoa ho so
+    public boolean XoaHoSo(int maHS){
+        try {
+            cnt.getConnectionBD();
+            String sql = "DELETE FROM benhan WHERE maba = ?";
+            PreparedStatement pstmt = cnt.getCnt().prepareStatement(sql);
+            pstmt.setInt(1, maHS);
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.print(e.getMessage());
+        }
+        finally{
+            cnt.closeCnt();
+        }
+        return false;
+    }    
+}

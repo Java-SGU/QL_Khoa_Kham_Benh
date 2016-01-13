@@ -1,0 +1,91 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package DAL;
+
+import DTO.DTOChucVu;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+/**
+ *
+ * @author Documents
+ */
+public class DALChucVu {
+    DALConnectionBD cnt = new DALConnectionBD();
+
+    public DALChucVu() {
+    }
+    
+    public DTOChucVu LayChucVuTheoTen(String tenCV){
+        try {
+            cnt.getConnectionBD();
+            DTOChucVu dtoChucVu = null;
+            String sql = "SELECT * FROM chucvu WHERE tencv = ?";
+            PreparedStatement pre = cnt.getCnt().prepareStatement(sql);
+            pre.setString(1, tenCV);
+            ResultSet rs = pre.executeQuery();
+            while(rs.next()){
+                dtoChucVu = new DTOChucVu(rs);
+            }
+            
+            return dtoChucVu;
+        } catch (SQLException e) {
+            System.err.print("Lấy dữ liệu bị lỗi");
+            return null;
+        }
+        finally{
+            cnt.closeCnt();
+        }
+    }
+    
+    public DTOChucVu LayChucVuTheoMa(int maCV){
+        try {
+            cnt.getConnectionBD();
+            DTOChucVu dtoChucVu = null;
+            String sql = "SELECT * FROM chucvu WHERE macv = ?";
+            PreparedStatement pre = cnt.getCnt().prepareStatement(sql);
+            pre.setInt(1, maCV);
+            ResultSet rs = pre.executeQuery();
+            while(rs.next()){
+                dtoChucVu = new DTOChucVu(rs);
+            }
+            return dtoChucVu;
+        } catch (SQLException e) {
+            System.err.print("Lấy dữ liệu bị lỗi");
+            return null;
+        }
+        finally{
+            cnt.closeCnt();
+        }
+    }
+    
+    //lay tat ca chuc vu
+    public ArrayList<DTOChucVu> layDSChucVu(){
+        ArrayList<DTOChucVu> dsChucVu = new ArrayList<>();
+        try {
+            cnt.getConnectionBD();
+            
+            String sql = "SELECT * FROM chucvu";
+            PreparedStatement pre = cnt.getCnt().prepareStatement(sql);
+            ResultSet rs = pre.executeQuery();
+            while(rs.next()){
+                dsChucVu.add(new DTOChucVu(rs));
+            }
+            
+            
+        } catch (SQLException e) {
+            System.err.print(e.getMessage());
+            System.err.print("Lấy ds dữ liệu bị lỗi");
+        }
+        finally{
+            cnt.closeCnt();
+        }
+        return dsChucVu;
+    }
+}

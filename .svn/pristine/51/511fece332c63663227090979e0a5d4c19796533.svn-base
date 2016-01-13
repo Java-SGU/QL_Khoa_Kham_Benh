@@ -1,0 +1,51 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package BLL;
+
+import DAL.DALPhongKham;
+import DTO.DTOPhongKham;
+import java.util.ArrayList;
+
+/**
+ *
+ * @author Pham
+ */
+public class BLLPhongKham {
+    DALPhongKham dalPhongKham = new DALPhongKham();
+    
+    public BLLPhongKham(){
+        
+    }
+    
+    public ArrayList<DTOPhongKham> layDSPhongKham(){
+        return dalPhongKham.layDSPhongKham();
+    }
+    
+    public DTOPhongKham layPhongKhamTheoMa(int mapk){
+        return dalPhongKham.layPhongKhamTheoMa(mapk);
+    }
+    
+     public DTOPhongKham LayPhongKhamTheoTen(String tenpk){
+         return dalPhongKham.LayPhongKhamTheoTen(tenpk);
+     }
+     
+     public boolean ThemPhongKham(DTOPhongKham dtoPK){
+         return dalPhongKham.ThemPhongKham(dtoPK);
+     }
+     
+     public boolean SuaPhongKham (DTOPhongKham dtoPK){
+         return dalPhongKham.SuaPhongKham(dtoPK);
+     }
+     
+     public ArrayList<DTOPhongKham> TimPhongKham(String tentim){
+         return dalPhongKham.TimPhongKham(tentim);
+     }
+     
+     public boolean XoaPhongKham(int matim){
+         return dalPhongKham.XoaPhongKham(matim);
+     }
+}
